@@ -18,16 +18,27 @@ const Container = styled.div`
   }
 `;
 
-const Book = ({ name, price, author, year }) => {
+const Book = ({ name, price, author, year, canBuy = false, buyBook }) => {
 
+  if (canBuy) {
     return (
-        <Container>
-            <h1>{name}</h1>
-            <p>Author: {author}</p>
-            <p>Year: {year}</p>
-            <p style={{ color: "red" }}>Price: {price}</p>
-        </Container>
+      <Container onClick={buyBook}>
+        <h1>{name}</h1>
+        <p>Author: {author}</p>
+        <p>Year: {year}</p>
+        <p style={{ color: "red" }}>Price: {price}</p>
+      </Container>
     )
+  }
+
+  return (
+    <Container>
+      <h1>{name}</h1>
+      <p>Author: {author}</p>
+      <p>Year: {year}</p>
+      <p style={{ color: "red" }}>Price: {price}</p>
+    </Container>
+  )
 }
 
 
