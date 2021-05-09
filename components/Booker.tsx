@@ -37,7 +37,7 @@ class Booker extends Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
-      books: [...dummy],
+      books: [],
       web3: null,
       accounts: null,
       balance: null,
@@ -67,7 +67,7 @@ class Booker extends Component<Props, State> {
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract }, this.getEthBalance);
+      this.setState({ web3, accounts, contract }, this.init);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -76,6 +76,11 @@ class Booker extends Component<Props, State> {
       console.error(error);
     }
   };
+
+  init = async () => {
+    this.getEthBalance();
+    this.getBooks();
+  }
 
   buyBook = async (bookId) => {
     try {
@@ -112,12 +117,31 @@ class Booker extends Component<Props, State> {
     alert('Stored 5 into account')
   };
 
-  getValue = async () => {
+  getBooks = async () => {
     try {
-      const { accounts, contract } = this.state
-      const response = await contract.methods.getBooks().call({ from: accounts[0] })
-      console.log(response)
-      this.setState({ balance: response })
+      const { accounts, contract, web3 } = this.state
+      let booksCnt = await contract.methods.getBooksCount().call({ from: accounts[0] });
+
+      let temp = []
+
+      for (let i = 0; i < booksCnt; i++) {
+        const bookId = await contract.methods.booksIds(i).call({ from: accounts[0] });
+
+        const { author, name, price, default_amount: amount } = await contract.methods.getBook(bookId).call({ from: accounts[0] });
+
+        temp.push({
+          author, name, price, amount, id: bookId, year: 2016
+        })
+      }
+
+      console.log(temp)
+
+      this.setState({ ...this.state, books: temp })
+
+
+      // const response = await contract.methods.getBooks().call({ from: accounts[0] })
+      // console.log(response)
+      // this.setState({ balance: response })
     } catch (error) {
       console.log(error)
     }
@@ -156,7 +180,6 @@ class Booker extends Component<Props, State> {
     return (
       <div>
         <p>ETH BALANCE: {this.state.ethBalance}</p>
-        <button onClick={this.getValue}>Get value</button>
         <button onClick={this.addBook}>add book</button>
         <button onClick={this.storeValue}>set value</button>
         <Grid>
