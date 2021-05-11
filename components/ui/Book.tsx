@@ -6,6 +6,7 @@ const Container = styled.div`
   flex-grow: 1;
   user-select: none;
   background: white;
+  overflow: hidden;
   flex-direction: column;
   align-items: center;
   height: 300px;
@@ -18,26 +19,26 @@ const Container = styled.div`
   }
 `;
 
-const Book = ({ name, price, author, year, canBuy = false, buyBook }) => {
+const Book = ({ name, price, author, amount, year, canBuy = false, buyBook }) => {
 
   if (canBuy) {
     return (
       <Container onClick={buyBook}>
-        <h1>{name}</h1>
+        <h1 style={{ textOverflow: "elipsis", whiteSpace: "nowrap", overflow: "hidden" }}>{name}</h1>
         <p>Author: {author}</p>
         <p>Year: {year}</p>
         <p style={{ color: "red" }}>Price: {price}</p>
+        <p>amount: {amount}</p>
       </Container>
     )
   }
 
   return (
-    <Container>
+    <Container style={canBuy ? {} : { background: "grey", cursor: "default" }}>
       <h1>{name}</h1>
       <p>Author: {author}</p>
       <p>Year: {year}</p>
-      <p style={{ color: "red" }}>Price: {price}</p>
-    </Container>
+    </Container >
   )
 }
 
